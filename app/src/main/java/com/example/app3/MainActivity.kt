@@ -4,13 +4,11 @@ import android.os.Bundle
 import android.widget.RadioButton
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.OptIn
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -66,28 +64,72 @@ fun TampilLayout(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TextHasil(namanya : String, telponnya : String, jenisnya : String ){
-    ElevatedCard(
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 6.dp
-        ),
-        modifier = Modifier
-            .fillMaxWidth()
-    ){
-       Text(
-           text = "Nama : "+namanya,
-           modifier = Modifier
-               .padding(horizontal = 10.dp, vertical = 4.dp)
-       )
-        Text(text = "Telepon :" + telponnya,
-        modifier = Modifier
-            .padding(horizontal =10.dp, vertical = 4.dp ))
+fun TampilForm(cobaViewModel: CobaViewModel = viewModel()){
 
-        Text(text = "Jenis Kelamin :" + jenisnya,
-            modifier = Modifier
-                .padding(horizontal =10.dp, vertical = 4.dp ))
+    var textNama by remember { mutableStateOf("")}
+    var textTlp by remember { mutableStateOf("")}
+    var textAlm by remember { mutableStateOf("") }
+
+    val context = LocalContext.current
+    val dataForm: DataForm
+    val uiState by cobaViewModel.uiState.collectAsState()
+    dataForm=uiState;
+
+    OutlinedTextField(
+        value = textNama,
+        singleLine = true,
+        shape = MaterialTheme,shapes,large,
+        modifier = Modifier.fillMaxWidth(),
+        label = { Text(text = "Nama")},
+        onValueChange = {
+            textNama = it
+        }
+
+    )
+    OutlinedTextField(
+        value = textTlp,
+        singleLine = true,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        shape = MaterialTheme,shapes,large,
+        modifier = Modifier.fillMaxWidth(),
+        label = { Text(text = "Telepon")},
+        onValueChange = {
+            textTlp = it
+        }
+    )
+    OutlinedTextField(
+        value = textAlm,
+        singleLine = true,
+        shape = MaterialTheme,shapes,large,
+        modifier = Modifier.fillMaxWidth(),
+        label = { Text(text = "Alamat")},
+        onValueChange = {
+            textAlm = it
+        }
+    )
+    SelectJK(options = jenis.map { id-> context.resources.getString(id)},
+        onSelectionChanged = {cobaViewModel.setJenisK(it)})
+    Button(
+        modifier = Modifier.fillMaxWidth(),
+        onClick ={
+            cobaViewModel.insertData(textNama,textTlp,dataForm.sex)
+        } ) {
+        Text(
+            text = stringResource(id = R.string.submit),
+            fontSize = 16.sp
+        )
     }
+    Spacer(modifier = Modifier.height((100.dp))
+            TextHasil(
+            namanya = cobaViewModel.namaUsr,
+        telponnya = cobaViewModel.noTlp,
+        alamatnya = cobaViewModel.almUsr,
+        jenisnya = cobaViewModel.jenisKl
+    )
+
+
 }
 
 @Composable
@@ -123,60 +165,38 @@ fun SelectJK(
     }
 }
 
+
 @Composable
-fun TampilForm(cobaViewModel: CobaViewModel = viewModel()){
+fun TextHasil(namanya : String, telponnya : String, alamatnya : String, jenisnya : String ){
+    ElevatedCard(
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 6.dp
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+    ){
+       Text(
+           text = "Nama : "+namanya,
+           modifier = Modifier
+               .padding(horizontal = 10.dp, vertical = 4.dp)
+       )
+        Text(text = "Telepon :" + telponnya,
+        modifier = Modifier
+            .padding(horizontal =10.dp, vertical = 4.dp ))
 
-    var textNama by remember { mutableStateOf("")}
-    var textTlp by remember { mutableStateOf("")}
+        Text(text = "Alamat :" + alamatnya,
+            modifier = Modifier
+                .padding(horizontal =10.dp, vertical = 4.dp ))
 
-    val context = LocalContext.current
-    val dataForm: DataForm
-    val uiState by cobaViewModel.uiState.collectAsState()
-    dataForm=uiState;
+        Text(text = "Jenis Kelamin :" + jenisnya,
+            modifier = Modifier
+                .padding(horizontal =10.dp, vertical = 4.dp ))
 
-    OutlinedTextField(
-        value = textNama,
-        singleLine = true,
-        shape = MaterialTheme,shapes,large,
-        modifier = Modifier.fillMaxWidth(),
-        label = { Text(text = "Nama")},
-        onValueChange = {
-            textNama = it
-        }
-
-    )
-    OutlinedTextField(
-        value = textTlp,
-        singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        shape = MaterialTheme,shapes,large,
-        modifier = Modifier.fillMaxWidth(),
-        label = { Text(text = "Nama")},
-        onValueChange = {
-            textTlp = it
-        }
-    )
-    SelectJK(options = jenis.map { id-> context.resources.getString(id)},
-        onSelectionChanged = {cobaViewModel.setJenisK(it)})
-    Button(
-        modifier = Modifier.fillMaxWidth(),
-        onClick ={
-            cobaViewModel.insertData(textNama,textTlp,dataForm.sex)
-        } ) {
-        Text(
-            text = stringResource(id = R.string.submit),
-        fontSize = 16.sp
-        )
     }
-    Spacer(modifier = Modifier.height((100.dp))
-    TextHasil(
-            namanya = cobaViewModel.namaUsr,
-            telponnya = cobaViewModel.noTlp,
-            jenisnya = cobaViewModel.jenisKl
-    )
-
-
 }
+
+
+
 
 
 @Preview(showBackground = true)
