@@ -4,8 +4,12 @@ import androidx.compose.runtime.mutableStateListOf
 import com.example.app3.R
 
 object DataSource {
-    val jenis = mutableStateListOf(
+    val jenis = listOf(
         R.string.laki,
         R.string.wanita
+    )
+    val status = listOf(
+        "Menikah",
+        "Belum Menikah"
     )
 }

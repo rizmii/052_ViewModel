@@ -14,7 +14,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,6 +22,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.app3.Data.DataForm
 import com.example.app3.Data.DataSource.jenis
+import com.example.app3.Data.DataSource.status
 import com.example.app3.ui.theme.App3Theme
 import com.example.app3.ui.theme.CobaViewModel
 
@@ -133,16 +133,23 @@ fun TampilForm(cobaViewModel: CobaViewModel = viewModel()){
             fontSize = 16.sp
         )
     }
+    SelectSTA(options = status.map {id-> context.resources.getString(id)},
+        ){
+        Text(text = stringResource(id = R.string.submit),
+           fontSize = 16.sp )
+    }
     Spacer(modifier = Modifier.height((100.dp))
-            TextHasil(
+    TextHasil(
             namanya = cobaViewModel.namaUsr,
         telponnya = cobaViewModel.noTlp,
         alamatnya = cobaViewModel.almUsr,
-        jenisnya = cobaViewModel.jenisKl
+        jenisnya = cobaViewModel.jenisKl,
+        statusnya = cobaViewModel.statUsr
     )
 
 
 }
+
 
 @Composable
 fun SelectJK(
@@ -177,9 +184,40 @@ fun SelectJK(
     }
 }
 
+fun SelectSTA(
+    options: List<String>,
+    onSelectionChanged: (String) -> Unit ={}
+){
+    var selectedValue by rememberSaveable{ mutableStateOf("") }
+
+    Column(modifier = Modifier.padding(10.dp)) {
+        options.forEach{ item ->
+            Row(
+                modifier = Modifier.selectable(
+                    selected = selectedValue== item,
+                    onClick = {
+                        selectedValue = item
+                        onSelectionChanged(item)
+                    }
+                ),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RadioButton(
+                    selected = selectedValue == item,
+                    onClick={
+                        selectedValue = item
+                        onSelectionChanged(item)
+                    }
+                )
+                Text(item)
+            }
+
+        }
+    }
+}
 
 @Composable
-fun TextHasil(namanya : String, telponnya : String, alamatnya : String, jenisnya : String ){
+fun TextHasil(namanya : String, telponnya : String, alamatnya : String, jenisnya : String, statusnya : String ){
     ElevatedCard(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 6.dp
@@ -203,6 +241,8 @@ fun TextHasil(namanya : String, telponnya : String, alamatnya : String, jenisnya
         Text(text = "Jenis Kelamin :" + jenisnya,
             modifier = Modifier
                 .padding(horizontal =10.dp, vertical = 4.dp ))
+
+
 
     }
 }
